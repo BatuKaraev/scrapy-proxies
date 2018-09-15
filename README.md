@@ -15,7 +15,7 @@ Install
 The quick way:
 
 ```bash
-pip install scrapy_proxies
+pip install scrapy-proxies-tool
 ```
 
 Or checkout the source and run
