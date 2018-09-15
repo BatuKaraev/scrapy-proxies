@@ -36,8 +36,8 @@ class RandomProxy(object):
   def __init__(self, settings):
     self.mode = settings.get('PROXY_MODE')
     self.proxy_list = settings.get('PROXY_LIST')
-    self.use_real_ip = settings.get('USE_REAL_WHEN_EMPTY') or True
-    self.from_proxies_server = settings.get('FROM_PROXIES_SERVER') or False
+    self.use_real_ip = settings.get('PROXY_USE_REAL_WHEN_EMPTY') or True
+    self.from_proxies_server = settings.get('PROXY_FROM_PROXIES_SERVER') or False
     self.chosen_proxy = ''
 
     lines = list()
