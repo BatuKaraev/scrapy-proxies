@@ -38,12 +38,20 @@ settings.py
     # http://username:password@host2:port
     # http://host3:port
     # ...
-    PROXY_LIST = '/path/to/proxy/list.txt'
+    PROXY_LIST = ['/path/to/proxy/list.txt']
+
+    # if PROXY_MODE = 3 , proxy_list is server address (ref https://github.com/qiyeboy/IPProxyPool and https://github.com/awolfly9/IPProxyTool )
+    # Only support http(ref https://github.com/qiyeboy/IPProxyPool#%E5%8F%82%E6%95%B0)
+    # PROXY_LIST = ['http://localhost:8000?protocol=0']
+
+    # disable proxy settings and  use real ip when all proxies are unusable
+    USE_REAL_WHEN_EMPTY = False
     
     # Proxy mode
     # 0 = Every requests have different proxy
     # 1 = Take only one proxy from the list and assign it to every requests
     # 2 = Put a custom proxy to use in the settings
+    # 3 = Every requests have different proxy , the proxies from IPProxyTool server
     PROXY_MODE = 0
     
     # If proxy mode is 2 uncomment this sentence :
