@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#coding:utf-8
+# coding:utf-8
 
 # Copyright (C) 2018- by AnJia <anjia0532@gmail.com> and Aivars Kalvans <aivars.kalvans@gmail.com>
 #
@@ -30,36 +30,39 @@ import requests
 log = logging.getLogger('scrapy.proxies')
 
 class Mode:
-  RANDOMIZE_PROXY_EVERY_REQUESTS, RANDOMIZE_PROXY_ONCE, SET_CUSTOM_PROXY, FROM_PROXIES_SERVER = range(4)
+  RANDOMIZE_PROXY_EVERY_REQUESTS, RANDOMIZE_PROXY_ONCE, SET_CUSTOM_PROXY = range(3)
 
 class RandomProxy(object):
   def __init__(self, settings):
     self.mode = settings.get('PROXY_MODE')
     self.proxy_list = settings.get('PROXY_LIST')
     self.use_real_ip = settings.get('USE_REAL_WHEN_EMPTY') or True
+    self.from_proxies_server = settings.get('FROM_PROXIES_SERVER') or False
     self.chosen_proxy = ''
 
-    lines=list()
+    lines = list()
 
-    if self.mode == Mode.RANDOMIZE_PROXY_EVERY_REQUESTS or self.mode == Mode.RANDOMIZE_PROXY_ONCE or self.mode == Mode.FROM_PROXIES_SERVER:
-      if self.proxy_list is None or not isinstance(self.proxy_list,list):
+    if (self.mode == Mode.RANDOMIZE_PROXY_EVERY_REQUESTS 
+        or self.mode == Mode.RANDOMIZE_PROXY_ONCE):
+      if not (self.proxy_list or isinstance(self.proxy_list, list)):
         raise KeyError('PROXY_LIST setting is missing')
-      for i in self.proxy_list:
-        try:
-          if self.mode == Mode.FROM_PROXIES_SERVER:
+
+      try:
+        for i in self.proxy_list:
+          if self.from_proxies_server:
             ips = requests.get(i).json()
-            lines.extend(list("http://"+ip[0] + ":" + str(ip[1]) for ip in ips if ips))
+            lines.extend(list("http://" + ip[0] + ":" + str(ip[1]) for ip in ips if ips))
           else:
             fin = open(i)
             lines.extend(fin.readlines())
             fin.close()
-        except Exception as e:
-          logging.exception(e)
+      except Exception as e:
+        logging.exception(e)
 
     elif self.mode == Mode.SET_CUSTOM_PROXY:
       lines = list(settings.get('CUSTOM_PROXY'))
     else:
-      raise KeyError('unknown Mode, RANDOMIZE_PROXY_EVERY_REQUESTS, RANDOMIZE_PROXY_ONCE, SET_CUSTOM_PROXY, FROM_PROXIES_SERVER plz!')
+      raise KeyError('unknown Mode, RANDOMIZE_PROXY_EVERY_REQUESTS, RANDOMIZE_PROXY_ONCE, SET_CUSTOM_PROXY plz!')
 
     if not lines:
       if self.use_real_ip:
@@ -84,7 +87,8 @@ class RandomProxy(object):
     except Exception as e:
       logging.exception(e)
 
-    if self.mode == Mode.RANDOMIZE_PROXY_ONCE or self.mode == Mode.SET_CUSTOM_PROXY:
+    if (self.mode == Mode.RANDOMIZE_PROXY_ONCE 
+        or self.mode == Mode.SET_CUSTOM_PROXY):
       self.chosen_proxy = random.choice(list(self.proxies.keys()))
 
   @classmethod
@@ -110,19 +114,20 @@ class RandomProxy(object):
 
     proxy_user_pass = self.proxies[proxy_address]
 
-    if proxy_user_pass:
+    if proxy_address:
       request.meta['proxy'] = proxy_address
+
+    if proxy_user_pass:
       basic_auth = 'Basic ' + base64.b64encode(proxy_user_pass.encode()).decode()
       request.headers['Proxy-Authorization'] = basic_auth
-    else:
-      log.debug('Proxy user pass not found')
-    log.debug('Using proxy <%s>, %d proxies left' % (
-        proxy_address, len(self.proxies)))
+
+    log.debug('Using proxy <%s>, %d proxies left' % (proxy_address, len(self.proxies)))
 
   def process_exception(self, request, exception, spider):
     if 'proxy' not in request.meta:
       return
-    if self.mode == Mode.RANDOMIZE_PROXY_EVERY_REQUESTS or self.mode == Mode.RANDOMIZE_PROXY_ONCE:
+    if (self.mode == Mode.RANDOMIZE_PROXY_EVERY_REQUESTS 
+        or self.mode == Mode.RANDOMIZE_PROXY_ONCE):
       proxy = request.meta['proxy']
       try:
         del self.proxies[proxy]
@@ -131,5 +136,4 @@ class RandomProxy(object):
       request.meta["exception"] = True
       if self.mode == Mode.RANDOMIZE_PROXY_ONCE:
         self.chosen_proxy = random.choice(list(self.proxies.keys()))
-      log.info('Removing failed proxy <%s>, %d proxies left' % (
-        proxy, len(self.proxies)))
+      log.info('Removing failed proxy <%s>, %d proxies left' % (proxy, len(self.proxies)))
