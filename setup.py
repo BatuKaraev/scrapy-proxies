@@ -1,18 +1,21 @@
 #!/usr/bin/env python
-#-*- coding:utf-8 -*-
-import sys
-from setuptools import setup, find_packages
+#coding:utf-8
 
-setup(name='scrapy-proxies-tool',
-  version='0.1',
+import setuptools
+
+with open("README.md", "r") as fh:
+    long_description = fh.read()
+
+setuptools.setup(
+  name='scrapy-proxies-tool',
+  version='0.0.1',
   keywords = ("Scrapy", "scrapy-proxies","proxies", "IPProxyTool"),
   description='Scrapy Proxies: random proxy middleware for Scrapy(support load proxies from IPProxyTool)',
-  long_description = "base on https://github.com/aivarsk/scrapy-proxies , support  load proxies from https://github.com/qiyeboy/IPProxyPool",
   license = "MIT Licence",
   author='AnJia',
   author_email='anjia0532@gmail.com',
   url='https://github.com/anjia0532/scrapy-proxies',
-  packages = find_packages(),
-  include_package_data = True,
-  platforms = "any"
+  long_description=long_description,
+  long_description_content_type="text/markdown",
+  packages=setuptools.find_packages(),
 )
