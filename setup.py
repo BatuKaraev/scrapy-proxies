@@ -8,7 +8,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
   name='scrapy-proxies-tool',
-  version='0.3.1',
+  version='0.4.0',
   keywords = ("Scrapy", "scrapy-proxies","proxies", "IPProxyTool"),
   description='Scrapy Proxies: random proxy middleware for Scrapy(support load proxies from IPProxyTool)',
   license = "MIT Licence",

@@ -34,11 +34,14 @@ class Mode:
 
 class RandomProxy(object):
   def __init__(self, settings):
-    self.mode = settings.get('PROXY_MODE')
-    self.proxy_list = settings.get('PROXY_LIST')
-    self.use_real_ip = settings.get('PROXY_USE_REAL_WHEN_EMPTY') or True
-    self.from_proxies_server = settings.get('PROXY_FROM_PROXIES_SERVER') or False
+    proxy_settings = settings.get('PROXY_SETTINGS',dict())
     self.chosen_proxy = ''
+    
+    self.mode = proxy_settings.get('mode',0)
+    self.proxy_list = proxy_settings.get('list',list())
+    self.use_real_ip = proxy_settings.get('use_real_when_empty',False)
+    self.from_proxies_server = proxy_settings.get('from_proxies_server',False)
+    self.custom_proxy = proxy_settings.get('custom_proxy','')
 
     lines = list()
 
@@ -59,8 +62,8 @@ class RandomProxy(object):
       except Exception as e:
         logging.exception(e)
 
-    elif self.mode == Mode.SET_CUSTOM_PROXY:
-      lines = list(settings.get('CUSTOM_PROXY'))
+    elif self.mode == Mode.SET_CUSTOM_PROXY and self.custom_proxy:
+      lines = list(self.custom_proxy)
     else:
       raise KeyError('unknown Mode, RANDOMIZE_PROXY_EVERY_REQUESTS, RANDOMIZE_PROXY_ONCE, SET_CUSTOM_PROXY plz!')
 
