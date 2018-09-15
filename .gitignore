@@ -1,3 +1,5 @@
 *.pyc
 .idea/
 .vscode/
+dist/
+scrapy_proxies_tool.egg-info/
