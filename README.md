@@ -27,6 +27,8 @@ Or checkout the source and run
 settings.py
 -----------
 
+```python
+
   # Retry many times since proxies often fail
   RETRY_TIMES = 10
   # Retry on most error codes since proxies fail for different reasons
@@ -61,11 +63,11 @@ settings.py
   
   # If proxy mode is 2 uncomment this sentence :
   #CUSTOM_PROXY = "http://host1:port"
-
+```
 
 For older versions of Scrapy (before 1.0.0) you have to use
-scrapy.contrib.downloadermiddleware.retry.RetryMiddleware and
-scrapy.contrib.downloadermiddleware.httpproxy.HttpProxyMiddleware
+`scrapy.contrib.downloadermiddleware.retry.RetryMiddleware` and
+`scrapy.contrib.downloadermiddleware.httpproxy.HttpProxyMiddleware`
 middlewares instead.
 
 
@@ -76,5 +78,7 @@ In each callback ensure that proxy /really/ returned your target page by
 checking for site logo or some other significant element.
 If not - retry request with dont_filter=True
 
+```python
   if not hxs.select('//get/site/logo'):
     yield Request(url=response.url, dont_filter=True)
+```
