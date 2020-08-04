@@ -101,8 +101,10 @@ class RandomProxy(object):
   def process_request(self, request, spider):
     # Don't overwrite with a random one (server-side state for IP)
     if 'proxy' in request.meta:
-      if request.meta["exception"] is False:
-        return
+      if 'retry_times' in request.meta:
+        if request.meta['retry_times'] <=6:
+          if request.meta["exception"] is False:
+            return
     request.meta["exception"] = False
     if len(self.proxies) == 0:
       if self.use_real_ip:
