@@ -102,7 +102,7 @@ class RandomProxy(object):
     # Don't overwrite with a random one (server-side state for IP)
     if 'proxy' in request.meta:
       if 'retry_times' in request.meta:
-        if request.meta['retry_times'] <=6:
+        if request.meta['retry_times']  >= 3:
           if request.meta["exception"] is False:
             return
     request.meta["exception"] = False
