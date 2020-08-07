@@ -33,6 +33,9 @@ settings.py
 RETRY_TIMES = 10
 # Retry on most error codes since proxies fail for different reasons
 RETRY_HTTP_CODES = [500, 503, 504, 400, 403, 404, 408]
+# Retry if get timeout
+RETRY_PROXY_CHANGE = 2
+
 
 DOWNLOADER_MIDDLEWARES = {
   'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
