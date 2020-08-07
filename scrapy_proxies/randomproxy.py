@@ -104,11 +104,13 @@ class RandomProxy(object):
     # Don't overwrite with a random one (server-side state for IP)
 
     if 'proxy' in request.meta:
-      if 'retry_times' in request.meta:
-        if request.meta['retry_times'] >= self.retry_proxy:
-          print(self.retry_proxy)
-          if request.meta["exception"] is False:
+      if request.meta["exception"] is False:
+        if 'retry_times' in request.meta:
+          if (request.meta['retry_times'] % int(self.retry_proxy)) == 0:
             return
+        else:
+          return 
+
     request.meta["exception"] = False
     if len(self.proxies) == 0:
       if self.use_real_ip:
