@@ -26,6 +26,7 @@ import random
 import base64
 import logging
 import requests
+from scrapy.utils.response import response_status_message
 
 log = logging.getLogger('scrapy.proxies')
 
@@ -35,6 +36,7 @@ class Mode:
 class RandomProxy(object):
   def __init__(self, settings):
     proxy_settings = settings.get('PROXY_SETTINGS',dict())
+    self.retry_proxy = settings.get('RETRY_PROXY_CHANGE', 2)
     self.chosen_proxy = ''
     
     self.mode = proxy_settings.get('mode',0)
@@ -100,9 +102,11 @@ class RandomProxy(object):
 
   def process_request(self, request, spider):
     # Don't overwrite with a random one (server-side state for IP)
+
     if 'proxy' in request.meta:
       if 'retry_times' in request.meta:
-        if request.meta['retry_times']  >= 3:
+        if request.meta['retry_times'] >= self.retry_proxy:
+          print(self.retry_proxy)
           if request.meta["exception"] is False:
             return
     request.meta["exception"] = False
@@ -142,3 +146,11 @@ class RandomProxy(object):
       if self.mode == Mode.RANDOMIZE_PROXY_ONCE:
         self.chosen_proxy = random.choice(list(self.proxies.keys()))
       log.info('Removing failed proxy <%s>, %d proxies left' % (proxy, len(self.proxies)))
+
+  def process_response(self, request, response, spider):
+    # Called with the response returned from the downloader.
+    # Must either;
+    # - return a Response object
+    # - return a Request object
+    # - or raise IgnoreRequest
+    return response
